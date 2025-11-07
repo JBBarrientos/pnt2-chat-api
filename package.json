@@ -1,0 +1,21 @@
+{
+  "name": "pnt2-chat-api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.925.0",
+    "@aws-sdk/client-dynamodb": "^3.922.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^17.2.3",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "jose": "^6.1.0",
+    "morgan": "~1.9.1",
+    "socket.io": "^4.8.1"
+  }
+}

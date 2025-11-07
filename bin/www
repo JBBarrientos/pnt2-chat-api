@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+import http from "http";
+import { Server } from "socket.io";
+import app from "../app.js";
+import { registerSocketIO } from "../socket.js"; // optional for clean socket setup
+
+const port = process.env.PORT || 3000;
+app.set("port", port);
+
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+
+// ✅ Inject io into routes *after* creation
+app.set("io", io);
+
+// optional: centralize socket event handling in its own file
+registerSocketIO(io);
+
+server.listen(port, () => {
+  console.log(`🚀 Server running on http://localhost:${port}`);
+});
