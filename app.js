@@ -1,16 +1,18 @@
-import express from "express";
-import messageRouter from "./routes/message.js";
-import authRouter from './routes/auth.js'
-import cors from "cors";
-import dotenv from 'dotenv'
-import { validateCognitoToken } from "./middleware/authentication.js";
+import express from 'express';
+import messageRouter from './routes/message.js';
+import authRouter from './routes/auth.js';
+import roomRouter from './routes/room.js';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { validateCognitoToken } from './middleware/authentication.js';
 
-dotenv.config()
+dotenv.config();
 const app = express();
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-app.use("/message", validateCognitoToken, messageRouter);
-app.use('/auth', authRouter)
+app.use('/message', validateCognitoToken, messageRouter);
+app.use('/room', validateCognitoToken, roomRouter);
+app.use('/auth', authRouter);
 
 export default app;

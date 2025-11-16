@@ -1,11 +1,14 @@
-import express from "express";
+import express from 'express';
 const router = express.Router();
-import { DynamoDBClient, PutItemCommand, QueryCommand  } from "@aws-sdk/client-dynamodb";
-import dotenv from 'dotenv'
-dotenv.config()
-
+import {
+  DynamoDBClient,
+  PutItemCommand,
+  QueryCommand,
+} from '@aws-sdk/client-dynamodb';
+import dotenv from 'dotenv';
+dotenv.config();
 const client = new DynamoDBClient({
-  region: process.env.AWS_REGION, 
+  region: process.env.AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -14,45 +17,45 @@ const client = new DynamoDBClient({
 
 async function postMessage(username, room, message) {
   const params = {
-    TableName: "OrtChat",
+    TableName: 'OrtChat',
     Item: {
       username: { S: username },
       timestamp: { S: new Date().toISOString() },
       message: { S: message },
-      room: {S: room}
+      room: { S: room },
     },
   };
   try {
     const result = await client.send(new PutItemCommand(params));
-    console.log("✅ Mensaje guardado:", result);
+    console.log('✅ Mensaje guardado:', result);
   } catch (error) {
-    console.error("❌ Error al guardar:", error);
+    console.error('❌ Error al guardar:', error);
   }
 }
 
-router.post("/", async (req, res) => {
-  const io = req.app.get("io");
+router.post('/', async (req, res) => {
+  const io = req.app.get('io');
   const { room, message } = req.body;
 
   if (!room || !message) {
-    return res.status(400).json({ error: "room and message are required" });
+    return res.status(400).json({ error: 'room and message are required' });
   }
 
-  io.to(room).emit("message", message);
-  await postMessage(req.user?.username || "unknown", room, message)
+  io.to(room).emit('message', message);
+  await postMessage(req.user?.username || 'unknown', room, message);
   res.json({ success: true });
 });
 
-router.get("/:room", async (req, res) => {
+router.get('/:room', async (req, res) => {
   const { room } = req.params;
 
   try {
     const result = await client.send(
       new QueryCommand({
-        TableName: "OrtChat",
-        KeyConditionExpression: "room = :r",
+        TableName: 'OrtChat',
+        KeyConditionExpression: 'room = :r',
         ExpressionAttributeValues: {
-          ":r": { S: room },
+          ':r': { S: room },
         },
         ScanIndexForward: true,
       })
@@ -64,10 +67,9 @@ router.get("/:room", async (req, res) => {
       messages: result.Items || [],
     });
   } catch (err) {
-    console.error("❌ Error al consultar DynamoDB:", err);
+    console.error('❌ Error al consultar DynamoDB:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
 
 export default router;
