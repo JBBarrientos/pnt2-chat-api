@@ -47,10 +47,12 @@ export function registerSocketIO(io) {
       const users = sockets.map((s) => s.user);
       socket.emit('roomUsers', users);
 
-      io.to(room).emit(
-        'message',
-        socket.user.username + ' has joined the room'
-      );
+      io.to(room).emit('message', {
+        message: socket.user.username + ' has joined the room',
+        room,
+        username: 'SERVER',
+        timestamp: new Date().toISOString(),
+      });
 
       const rooms = await getAllRoomsWithMessages();
       io.emit('rooms', rooms);
