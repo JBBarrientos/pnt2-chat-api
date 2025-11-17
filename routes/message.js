@@ -41,7 +41,12 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'room and message are required' });
   }
 
-  io.to(room).emit('message', message);
+  io.to(room).emit('message', {
+    message,
+    room,
+    username: req.user?.username,
+    timestamp: new Date().toISOString(),
+  });
   await postMessage(req.user?.username || 'unknown', room, message);
   res.json({ success: true });
 });
